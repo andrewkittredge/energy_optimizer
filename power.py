@@ -1,8 +1,15 @@
 import pyomo.environ as pyo
 model = pyo.ConcreteModel()
 
-model.x = pyo.Var([1,2], domain=pyo.PositiveReals)
+model.llamas = pyo.Var(within=pyo.NonNegativeReals)
+model.goats = pyo.Var(within=pyo.NonNegativeReals)
 
-model.OBJ = pyo.Objective(expr = model.x[1]  - model.x[2])
+model.maximizeProfits = pyo.Objective(expr=200 * model.llamas  + 300 * model.goats, sense=pyo.maximize)
 
-model.Constraint1 = pyo.Constraint(expr = model.x[1] + model.x[2] >= 10)
+model.LaborConstraint = pyo.Constraint(expr = 3 * model.llamas + 2 * model.goats <= 100)
+model.MedialConstraint = pyo.Constraint(expr=2* model.llamas + 4 * model.goats <= 120)
+model.LandConstraint  = pyo.Constraint(expr = model.llamas + model.goats <= 45)
+
+optimizer = pyo.SolverFactory('glpk')
+optimizer.solve(model)
+print(model.display())
