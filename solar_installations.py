@@ -8,4 +8,7 @@ INSTALLATION_SIZES = {
     12: 24000,
 }
 """
-Maps solar installation sizes (in kW) to their corresponding costs (in USD)."""
+Maps solar installation sizes (in kW) to their corresponding costs (in USD).
+
+https://www.integratesun.com/post/how-much-does-it-cost-to-install-solar-panels-in-2025-1
+"""
