@@ -1,2 +1,4 @@
 pyomo
 pint
+fastapi
+uvicorn[standard]

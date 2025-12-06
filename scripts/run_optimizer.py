@@ -19,22 +19,45 @@ import pyomo.gdp as gdp
 from pyomo.core import TransformationFactory
 
 
-def build_model() -> pyo.ConcreteModel:
-    # Constants from the notebook
-    PEAK_PRICE = 0.5
-    OFF_PEAK_PRICE = 0.4
-    BATTERY_COST_PER_KW = 0.15
-    PEAK_CONSUMPTION = 10
-    OFF_PEAK_CONSUMPTION = 20
+def build_model(params: dict | None = None) -> pyo.ConcreteModel:
+    """Build the optimization model.
 
-    SOLAR_INSTALLATION_SIZES = {
-        3: 0.282,
-        5: 0.250,
-        6: 0.230,
-        8: 0.210,
-        10: 0.190,
-        12: 0.117,
+    Optional `params` dictionary can override the default constants. Supported keys:
+      - peak_price
+      - off_peak_price
+      - battery_cost_per_kw
+      - peak_consumption
+      - off_peak_consumption
+      - solar_installation_sizes (dict mapping size->cost)
+    """
+    # Defaults (from the notebook)
+    defaults = {
+        "peak_price": 0.5,
+        "off_peak_price": 0.4,
+        "battery_cost_per_kw": 0.15,
+        "peak_consumption": 10,
+        "off_peak_consumption": 20,
+        "solar_installation_sizes": {
+            3: 0.282,
+            5: 0.250,
+            6: 0.230,
+            8: 0.210,
+            10: 0.190,
+            12: 0.117,
+        },
     }
+
+    if params:
+        # shallow merge: override any defaults provided in params
+        defaults.update(params)
+
+    PEAK_PRICE = defaults["peak_price"]
+    OFF_PEAK_PRICE = defaults["off_peak_price"]
+    BATTERY_COST_PER_KW = defaults["battery_cost_per_kw"]
+    PEAK_CONSUMPTION = defaults["peak_consumption"]
+    OFF_PEAK_CONSUMPTION = defaults["off_peak_consumption"]
+
+    SOLAR_INSTALLATION_SIZES = defaults["solar_installation_sizes"]
 
     model = pyo.ConcreteModel()
 
