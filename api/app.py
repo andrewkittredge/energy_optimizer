@@ -5,6 +5,11 @@ from typing import Any, Dict
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from fastapi_mcp import FastApiMCP
+
+app = FastAPI()
+
+
 import scripts.run_optimizer as run_optimizer
 
 app = FastAPI(title="Energy Optimizer API")
@@ -23,7 +28,7 @@ app.add_middleware(
 def optimize(body: Dict[str, Any] | None = None):
     """Accept JSON body with optional params and run the optimizer.
 
-    Supported keys (same as script `build_model(params=...)`):
+    Supported keys (same as scr ipt `build_model(params=...)`):
       - peak_price, off_peak_price, battery_cost_per_kw
       - peak_consumption, off_peak_consumption
       - solar_installation_sizes (map of size->cost)
@@ -56,6 +61,11 @@ def optimize(body: Dict[str, Any] | None = None):
     }
     return {"status": "ok", "summary": summary}
 
+
+mcp = FastApiMCP(app)
+
+# Mount the MCP server directly to your FastAPI app
+mcp.mount()
 
 if __name__ == "__main__":
     import uvicorn

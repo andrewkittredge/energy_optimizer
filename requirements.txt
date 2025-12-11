@@ -2,3 +2,4 @@ pyomo
 pint
 fastapi
 uvicorn[standard]
+fastapi_mcp
