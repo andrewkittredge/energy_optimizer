@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from fastapi_mcp import FastApiMCP
-
-app = FastAPI()
-
 
 import scripts.run_optimizer as run_optimizer
 
@@ -24,29 +22,41 @@ app.add_middleware(
 )
 
 
+class OptimizeParams(BaseModel):
+    peak_price: Optional[float] = None
+    off_peak_price: Optional[float] = None
+    battery_cost_per_kw: Optional[float] = None
+    peak_consumption: Optional[float] = None
+    off_peak_consumption: Optional[float] = None
+    # Accept JSON string keys (typical when sent from JS). We'll coerce to int below.
+    solar_installation_sizes: Optional[Dict[str, float]] = None
+
+
 @app.post("/optimize")
-def optimize(body: Dict[str, Any] | None = None):
+def optimize(body: OptimizeParams | None = None):
     """Accept JSON body with optional params and run the optimizer.
 
-    Supported keys (same as scr ipt `build_model(params=...)`):
+    Supported keys (same as script `build_model(params=...)`):
       - peak_price, off_peak_price, battery_cost_per_kw
       - peak_consumption, off_peak_consumption
       - solar_installation_sizes (map of size->cost)
     """
-    body = body or {}
+    params: Dict[str, Any] = {}
+    if body is not None:
+        params = body.dict(exclude_none=True)
 
     # Convert solar size keys to ints when provided as strings
-    if "solar_installation_sizes" in body:
-        sizes = body["solar_installation_sizes"]
+    if "solar_installation_sizes" in params:
+        sizes = params["solar_installation_sizes"]
         try:
             sizes = {int(k): float(v) for k, v in sizes.items()}
         except Exception as exc:
             raise HTTPException(
                 status_code=400, detail="Invalid solar_installation_sizes format"
             )
-        body["solar_installation_sizes"] = sizes
+        params["solar_installation_sizes"] = sizes
 
-    model = run_optimizer.build_model(params=body)
+    model = run_optimizer.build_model(params=params)
 
     try:
         run_optimizer.solve_model(model)
