@@ -8,6 +8,8 @@ from pydantic import BaseModel
 
 from fastapi_mcp import FastApiMCP
 
+from .optimize_response import OptimizeResponse
+from .optimize_params import OptimizeParams
 import scripts.run_optimizer as run_optimizer
 
 app = FastAPI(title="Energy Optimizer API")
@@ -21,19 +23,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-class OptimizeParams(BaseModel):
-    peak_price: Optional[float] = None
-    off_peak_price: Optional[float] = None
-    battery_cost_per_kw: Optional[float] = None
-    peak_consumption: Optional[float] = None
-    off_peak_consumption: Optional[float] = None
-    # Accept JSON string keys (typical when sent from JS). We'll coerce to int below.
-    solar_installation_sizes: Optional[Dict[str, float]] = None
-
-
 @app.post("/optimize")
-def optimize(body: OptimizeParams | None = None):
+def optimize(body: OptimizeParams | None = None)-> OptimizeResponse:
     """Accept JSON body with optional params and run the optimizer.
 
     Supported keys (same as script `build_model(params=...)`):
@@ -62,14 +53,12 @@ def optimize(body: OptimizeParams | None = None):
         run_optimizer.solve_model(model)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"solver error: {exc}")
-
-    summary = {
-        "solar_capacity": float(model.solar_capacity.value),
-        "battery_capacity": float(model.battery_capacity.value),
-        "off_peak_grid_usage": float(model.off_peak_grid_usage.value),
-        "peak_grid_consumption": float(model.peak_grid_consumption.value),
-    }
-    return {"status": "ok", "summary": summary}
+    return OptimizeResponse(
+        solar_capacity=float(model.solar_capacity.value),
+        battery_capacity=float(model.battery_capacity.value),
+        off_peak_grid_usage=float(model.off_peak_grid_usage.value),
+        peak_grid_consumption=float(model.peak_grid_consumption.value),
+    )
 
 
 mcp = FastApiMCP(app)
