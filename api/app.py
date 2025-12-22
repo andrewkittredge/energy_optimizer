@@ -25,9 +25,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve frontend static files
-frontend_path = Path(__file__).parent.parent / "frontend"
-app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+# Serve frontend static files and webpack output
+base_path = Path(__file__).parent.parent
+frontend_path = base_path / "frontend"
+public_path = base_path / "public"
+
+# Mount the webpack output (`public/`) at `/static` so built assets
+# produced by webpack are served from /static/*
+app.mount("/static", StaticFiles(directory=public_path), name="static")
 
 
 @app.get("/")
