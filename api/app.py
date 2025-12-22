@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from fastapi_mcp import FastApiMCP
 
@@ -23,8 +25,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Serve frontend static files
+frontend_path = Path(__file__).parent.parent / "frontend"
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+
+
+@app.get("/")
+def serve_index() -> FileResponse:
+    """Serve the index.html file."""
+    return FileResponse(frontend_path / "index.html", media_type="text/html")
+
+
 @app.post("/optimize")
-def optimize(body: OptimizeParams | None = None)-> OptimizeResponse:
+def optimize(body: OptimizeParams | None = None) -> OptimizeResponse:
     """Accept JSON body with optional params and run the optimizer.
 
     Supported keys (same as script `build_model(params=...)`):

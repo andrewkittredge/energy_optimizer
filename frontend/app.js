@@ -21,7 +21,7 @@ form.addEventListener('submit', async (ev) => {
   result.textContent = 'Running...';
 
   try {
-    const resp = await fetch('http://localhost:5000/optimize', {
+    const resp = await fetch('/optimize', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
