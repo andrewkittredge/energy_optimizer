@@ -5,6 +5,13 @@ interface OptimizeBody {
   [key: string]: number | Record<string, number>;
 }
 
+interface OptimizeResponse {
+  solar_capacity: number;
+  battery_capacity: number;
+  off_peak_grid_usage: number;
+  peak_grid_consumption: number;
+}
+
 form.addEventListener('submit', async (ev: Event): Promise<void> => {
   ev.preventDefault();
   const data = new FormData(form);
@@ -31,7 +38,7 @@ form.addEventListener('submit', async (ev: Event): Promise<void> => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-    const j = await resp.json();
+    const j = await resp.json() as OptimizeResponse;
     result.textContent = JSON.stringify(j, null, 2);
   } catch (err) {
     result.textContent = 'Request failed: ' + (err instanceof Error ? err.message : String(err));
