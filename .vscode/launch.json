@@ -14,6 +14,31 @@
                 "--reload"
             ],
             "jinja": true
+        },
+        {
+            "name": "Webpack: watch",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "watch"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "presentation": {
+                "group": "webpack",
+                "reveal": "always"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Run FastAPI + Webpack watch",
+            "configurations": [
+                "Python Debugger: FastAPI",
+                "Webpack: watch"
+            ]
         }
     ]
 }
