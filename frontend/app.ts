@@ -15,7 +15,7 @@ interface OptimizeResponse {
 form.addEventListener('submit', async (ev: Event): Promise<void> => {
   ev.preventDefault();
   const data = new FormData(form);
-  const body: OptimizeBody = {};
+  const body: OptimizeBody = {}
   
   for (const [k, v] of data.entries()) {
     if (k === 'solar_installation_sizes') {

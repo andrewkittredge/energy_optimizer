@@ -4,7 +4,9 @@
         "module": "ESNext",
         "lib": [
             "ES2020",
-            "DOM"
+            "ESNext",
+            "DOM",
+            "DOM.Iterable"
         ],
         "outDir": "./frontend",
         "rootDir": "./frontend",
