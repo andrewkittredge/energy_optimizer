@@ -31,7 +31,8 @@ export class AppComponent {
   offPeakConsumption: number = 20;
   solarInstallationSizes: string = '{"3":0.282,"5":0.25,"6":0.23,"8":0.21,"10":0.19,"12":0.117}';
   
-  result: string = 'No run yet.';
+  result: OptimizeResponse | null = null;
+  resultError: string = '';
   isRunning: boolean = false;
 
   async onSubmit(): Promise<void> {
@@ -46,11 +47,12 @@ export class AppComponent {
     try {
       body['solar_installation_sizes'] = JSON.parse(this.solarInstallationSizes);
     } catch (err) {
-      this.result = 'Invalid JSON for solar sizes';
+      this.resultError = 'Invalid JSON for solar sizes';
       return;
     }
 
-    this.result = 'Running...';
+    this.result = null;
+    this.resultError = '';
     this.isRunning = true;
 
     try {
@@ -60,9 +62,9 @@ export class AppComponent {
         body: JSON.stringify(body),
       });
       const j = (await resp.json()) as OptimizeResponse;
-      this.result = JSON.stringify(j, null, 2);
+      this.result = j;
     } catch (err) {
-      this.result = 'Request failed: ' + (err instanceof Error ? err.message : String(err));
+      this.resultError = 'Request failed: ' + (err instanceof Error ? err.message : String(err));
     } finally {
       this.isRunning = false;
     }

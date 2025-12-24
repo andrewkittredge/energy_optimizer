@@ -28,7 +28,30 @@
     <button type="submit" [disabled]="isRunning">{{ isRunning ? 'Running...' : 'Run optimization' }}</button>
   </form>
 
-  <h2>Result</h2>
-  <pre>{{ result }}</pre>
+  <h2>Results</h2>
+  <div *ngIf="result" class="results-grid">
+    <div class="result-card">
+      <div class="result-label">Solar Capacity</div>
+      <div class="result-value">{{ result.solar_capacity.toFixed(2) }} kW</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Battery Capacity</div>
+      <div class="result-value">{{ result.battery_capacity.toFixed(2) }} kWh</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Off-peak Grid Usage</div>
+      <div class="result-value">{{ result.off_peak_grid_usage.toFixed(2) }} kWh</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Peak Grid Consumption</div>
+      <div class="result-value">{{ result.peak_grid_consumption.toFixed(2) }} kWh</div>
+    </div>
+  </div>
+  <div *ngIf="resultError" class="error-message">
+    {{ resultError }}
+  </div>
+  <div *ngIf="!result && !resultError" class="no-results">
+    No results yet. Run the optimization to see results.
+  </div>
 </div>
 
