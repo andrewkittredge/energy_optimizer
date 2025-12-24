@@ -35,10 +35,10 @@
     ],
     "compounds": [
         {
-            "name": "Run FastAPI + Webpack watch",
+            "name": "Run FastAPI + Angular serve",
             "configurations": [
                 "Python Debugger: FastAPI",
-                "Webpack: watch"
+                "Angular: ng serve"
             ]
         }
     ]
