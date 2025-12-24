@@ -54,7 +54,7 @@ export class AppComponent {
     this.isRunning = true;
 
     try {
-      const resp = await fetch('/optimize', {
+      const resp = await fetch('http://localhost:8000/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
