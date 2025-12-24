@@ -1,12 +1,8 @@
 from __future__ import annotations
 
 from typing import Any, Dict
-from pathlib import Path
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 
 from fastapi_mcp import FastApiMCP
 
@@ -24,21 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Serve frontend static files and webpack output
-base_path = Path(__file__).parent.parent
-frontend_path = base_path / "frontend"
-public_path = base_path / "public"
-
-# Mount the webpack output (`public/`) at `/static` so built assets
-# produced by webpack are served from /static/*
-app.mount("/static", StaticFiles(directory=public_path), name="static")
-
-
-@app.get("/")
-def serve_index() -> FileResponse:
-    """Serve the index.html file."""
-    return FileResponse(frontend_path / "index.html", media_type="text/html")
 
 
 @app.post("/optimize")
