@@ -3,27 +3,27 @@
   <form (ngSubmit)="onSubmit()">
     <label>
       Peak price (USD/kWh):
-      <input type="number" step="0.01" [(ngModel)]="peakPrice" name="peak_price" />
+      <input type="number" step="0.01" [(ngModel)]="peakPrice" (ngModelChange)="updateUrlState()" name="peak_price" />
     </label>
     <label>
       Off-peak price (USD/kWh):
-      <input type="number" step="0.01" [(ngModel)]="offPeakPrice" name="off_peak_price" />
+      <input type="number" step="0.01" [(ngModel)]="offPeakPrice" (ngModelChange)="updateUrlState()" name="off_peak_price" />
     </label>
     <label>
       Battery cost per kW (USD/kWh):
-      <input type="number" step="0.01" [(ngModel)]="batteryCostPerKw" name="battery_cost_per_kw" />
+      <input type="number" step="0.01" [(ngModel)]="batteryCostPerKw" (ngModelChange)="updateUrlState()" name="battery_cost_per_kw" />
     </label>
     <label>
       Peak consumption (kWh):
-      <input type="number" step="1" [(ngModel)]="peakConsumption" name="peak_consumption" />
+      <input type="number" step="1" [(ngModel)]="peakConsumption" (ngModelChange)="updateUrlState()" name="peak_consumption" />
     </label>
     <label>
       Off-peak consumption (kWh):
-      <input type="number" step="1" [(ngModel)]="offPeakConsumption" name="off_peak_consumption" />
+      <input type="number" step="1" [(ngModel)]="offPeakConsumption" (ngModelChange)="updateUrlState()" name="off_peak_consumption" />
     </label>
 
     <label>Solar sizes (JSON map size->cost):</label>
-    <textarea [(ngModel)]="solarInstallationSizes" name="solar_installation_sizes"></textarea>
+    <textarea [(ngModel)]="solarInstallationSizes" (ngModelChange)="updateUrlState()" name="solar_installation_sizes"></textarea>
 
     <button type="submit" [disabled]="isRunning">{{ isRunning ? 'Running...' : 'Run optimization' }}</button>
   </form>

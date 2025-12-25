@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 interface OptimizeBody {
   [key: string]: number | Record<string, number>;
@@ -20,7 +21,7 @@ interface OptimizeResponse {
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'energy-optimizer';
   
   // Form values
@@ -34,6 +35,52 @@ export class AppComponent {
   result: OptimizeResponse | null = null;
   resultError: string = '';
   isRunning: boolean = false;
+
+  constructor(private route: ActivatedRoute, private router: Router) {}
+
+  ngOnInit(): void {
+    this.loadStateFromUrl();
+  }
+
+  loadStateFromUrl(): void {
+    this.route.queryParams.subscribe((params) => {
+      if (params['peakPrice'] !== undefined) this.peakPrice = Number(params['peakPrice']);
+      if (params['offPeakPrice'] !== undefined) this.offPeakPrice = Number(params['offPeakPrice']);
+      if (params['batteryCostPerKw'] !== undefined) this.batteryCostPerKw = Number(params['batteryCostPerKw']);
+      if (params['peakConsumption'] !== undefined) this.peakConsumption = Number(params['peakConsumption']);
+      if (params['offPeakConsumption'] !== undefined) this.offPeakConsumption = Number(params['offPeakConsumption']);
+      if (params['solarInstallationSizes'] !== undefined) {
+        let raw = params['solarInstallationSizes'];
+        try {
+          // If it's URL-encoded JSON, decode first
+          const decoded = decodeURIComponent(String(raw));
+          // If decoded looks like JSON, use it; otherwise try raw
+          const candidate = decoded.trim().startsWith('{') ? decoded : String(raw);
+          // Normalize to a pretty JSON string for the textarea
+          const parsed = JSON.parse(candidate);
+          this.solarInstallationSizes = JSON.stringify(parsed);
+        } catch (e) {
+          // fallback: set raw string (e.g., already a compact JSON or simple string)
+          this.solarInstallationSizes = String(raw);
+        }
+      }
+    });
+  }
+
+  updateUrlState(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        peakPrice: this.peakPrice,
+        offPeakPrice: this.offPeakPrice,
+        batteryCostPerKw: this.batteryCostPerKw,
+        peakConsumption: this.peakConsumption,
+        offPeakConsumption: this.offPeakConsumption,
+        solarInstallationSizes: this.solarInstallationSizes,
+      },
+      queryParamsHandling: 'merge',
+    });
+  }
 
   async onSubmit(): Promise<void> {
     const body: OptimizeBody = {
@@ -63,6 +110,7 @@ export class AppComponent {
       });
       const j = (await resp.json()) as OptimizeResponse;
       this.result = j;
+      this.updateUrlState();
     } catch (err) {
       this.resultError = 'Request failed: ' + (err instanceof Error ? err.message : String(err));
     } finally {
