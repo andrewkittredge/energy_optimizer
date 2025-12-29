@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
   batteryCostPerKw!: number;
   peakConsumption!: number;
   offPeakConsumption!: number;
-  solarInstallationSizes!: string;
+  solarSizes: { kw: number; cost: number }[] = [];
   
   result: OptimizeResponse | null = null;
   resultError: string = '';
@@ -61,11 +61,21 @@ export class AppComponent implements OnInit {
         this.batteryCostPerKw = defaults.battery_cost_per_kw;
         this.peakConsumption = defaults.peak_consumption;
         this.offPeakConsumption = defaults.off_peak_consumption;
-        this.solarInstallationSizes = JSON.stringify(defaults.solar_installation_sizes);
+        this.solarSizes = Object.entries(defaults.solar_installation_sizes).map(
+          ([kw, cost]) => ({ kw: Number(kw), cost: Number(cost) })
+        );
       })
       .catch((err) => {
         console.warn('Failed to load defaults from API:', err);
       });
+  }
+
+  addSolarSize() {
+    this.solarSizes.push({ kw: 0, cost: 0 });
+  }
+
+  removeSolarSize(index: number) {
+    this.solarSizes.splice(index, 1);
   }
 
   loadStateFromUrl(): void {
@@ -83,11 +93,16 @@ export class AppComponent implements OnInit {
           // If decoded looks like JSON, use it; otherwise try raw
           const candidate = decoded.trim().startsWith('{') ? decoded : String(raw);
           // Normalize to a pretty JSON string for the textarea
-          const parsed = JSON.parse(candidate);
-          this.solarInstallationSizes = JSON.stringify(parsed);
+          const parsed = JSON.parse(candidate) as { [key: string]: number };
+          this.solarSizes = Object.entries(parsed).map(
+            ([kw, cost]: [string, number]) => ({ kw: Number(kw), cost })
+          );
         } catch (e) {
           // fallback: set raw string (e.g., already a compact JSON or simple string)
-          this.solarInstallationSizes = String(raw);
+          this.solarSizes = String(raw).split(',').map(size => {
+            const [kw, cost] = size.split(':').map(Number);
+            return { kw, cost };
+          });
         }
       }
     });
@@ -102,7 +117,7 @@ export class AppComponent implements OnInit {
         batteryCostPerKw: this.batteryCostPerKw,
         peakConsumption: this.peakConsumption,
         offPeakConsumption: this.offPeakConsumption,
-        solarInstallationSizes: this.solarInstallationSizes,
+        solarInstallationSizes: JSON.stringify(Object.fromEntries(this.solarSizes.map(item => [item.kw, item.cost]))),
       },
       queryParamsHandling: 'merge',
     });
@@ -115,14 +130,8 @@ export class AppComponent implements OnInit {
       battery_cost_per_kw: this.batteryCostPerKw,
       peak_consumption: this.peakConsumption,
       off_peak_consumption: this.offPeakConsumption,
+      solar_installation_sizes: Object.fromEntries(this.solarSizes.map(item => [item.kw, item.cost]))
     };
-
-    try {
-      body['solar_installation_sizes'] = JSON.parse(this.solarInstallationSizes);
-    } catch (err) {
-      this.resultError = 'Invalid JSON for solar sizes';
-      return;
-    }
 
     this.result = null;
     this.resultError = '';

@@ -2,30 +2,103 @@
   <h1>Energy Optimizer</h1>
   <form (ngSubmit)="onSubmit()">
     <label>
-      Peak price (USD/kWh):
-      <input type="number" step="0.01" [(ngModel)]="peakPrice" (ngModelChange)="updateUrlState()" name="peak_price" />
+      <a
+        href="https://www.pge.com/assets/pge/docs/account/rate-plans/residential-electric-rate-plan-pricing.pdf"
+        target="_blank"
+        >Peak price (USD/kWh)</a
+      >:
+      <input
+        type="number"
+        step="0.01"
+        [(ngModel)]="peakPrice"
+        (ngModelChange)="updateUrlState()"
+        name="peak_price"
+      />
     </label>
     <label>
-      Off-peak price (USD/kWh):
-      <input type="number" step="0.01" [(ngModel)]="offPeakPrice" (ngModelChange)="updateUrlState()" name="off_peak_price" />
+      <a
+        href="https://www.pge.com/assets/pge/docs/account/rate-plans/residential-electric-rate-plan-pricing.pdf"
+        target="_blank"
+      >
+        Off-peak price (USD/kWh)</a
+      >:
+      <input
+        type="number"
+        step="0.01"
+        [(ngModel)]="offPeakPrice"
+        (ngModelChange)="updateUrlState()"
+        name="off_peak_price"
+      />
     </label>
     <label>
-      Battery cost per kW (USD/kWh):
-      <input type="number" step="0.01" [(ngModel)]="batteryCostPerKw" (ngModelChange)="updateUrlState()" name="battery_cost_per_kw" />
+      <a>Battery cost per kW (USD/kWh)</a>:
+      <input
+        type="number"
+        step="0.01"
+        [(ngModel)]="batteryCostPerKw"
+        (ngModelChange)="updateUrlState()"
+        name="battery_cost_per_kw"
+      />
     </label>
     <label>
-      Peak consumption (kWh):
-      <input type="number" step="1" [(ngModel)]="peakConsumption" (ngModelChange)="updateUrlState()" name="peak_consumption" />
+      <a>Peak consumption (kWh)</a>:
+      <input
+        type="number"
+        step="1"
+        [(ngModel)]="peakConsumption"
+        (ngModelChange)="updateUrlState()"
+        name="peak_consumption"
+      />
     </label>
     <label>
-      Off-peak consumption (kWh):
-      <input type="number" step="1" [(ngModel)]="offPeakConsumption" (ngModelChange)="updateUrlState()" name="off_peak_consumption" />
+      <a>Off-peak consumption (kWh)</a>:
+      <input
+        type="number"
+        step="1"
+        [(ngModel)]="offPeakConsumption"
+        (ngModelChange)="updateUrlState()"
+        name="off_peak_consumption"
+      />
     </label>
 
-    <label>Solar sizes (JSON map size->cost):</label>
-    <textarea [(ngModel)]="solarInstallationSizes" (ngModelChange)="updateUrlState()" name="solar_installation_sizes"></textarea>
+    <div>
+      <label>Solar Installation Sizes:</label>
+      <div
+        *ngFor="let size of solarSizes; let i = index"
+        style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px"
+      >
+        <input
+          type="number"
+          [(ngModel)]="size.kw"
+          min="0"
+          step="0.1"
+          placeholder="kW"
+          style="width: 80px"
+          name="solar_kw_{{ i }}"
+        />
+        <input
+          type="number"
+          [(ngModel)]="size.cost"
+          min="0"
+          step="0.01"
+          placeholder="Cost"
+          style="width: 100px"
+          name="solar_cost_{{ i }}"
+        />
+        <button
+          type="button"
+          (click)="removeSolarSize(i)"
+          *ngIf="solarSizes.length > 1"
+        >
+          Remove
+        </button>
+      </div>
+      <button type="button" (click)="addSolarSize()">Add Size</button>
+    </div>
 
-    <button type="submit" [disabled]="isRunning">{{ isRunning ? 'Running...' : 'Run optimization' }}</button>
+    <button type="submit" [disabled]="isRunning">
+      {{ isRunning ? "Running..." : "Run optimization" }}
+    </button>
   </form>
 
   <h2>Results</h2>
@@ -36,15 +109,21 @@
     </div>
     <div class="result-card">
       <div class="result-label">Battery Capacity</div>
-      <div class="result-value">{{ result.battery_capacity.toFixed(2) }} kWh</div>
+      <div class="result-value">
+        {{ result.battery_capacity.toFixed(2) }} kWh
+      </div>
     </div>
     <div class="result-card">
       <div class="result-label">Off-peak Grid Usage</div>
-      <div class="result-value">{{ result.off_peak_grid_usage.toFixed(2) }} kWh</div>
+      <div class="result-value">
+        {{ result.off_peak_grid_usage.toFixed(2) }} kWh
+      </div>
     </div>
     <div class="result-card">
       <div class="result-label">Peak Grid Consumption</div>
-      <div class="result-value">{{ result.peak_grid_consumption.toFixed(2) }} kWh</div>
+      <div class="result-value">
+        {{ result.peak_grid_consumption.toFixed(2) }} kWh
+      </div>
     </div>
   </div>
   <div *ngIf="resultError" class="error-message">
@@ -54,4 +133,3 @@
     No results yet. Run the optimization to see results.
   </div>
 </div>
-
