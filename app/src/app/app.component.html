@@ -74,13 +74,20 @@
     </label>
 
     <div>
-      <label>
-        <a
+      <label
+        ><a
           href="https://www.integratesun.com/post/how-much-does-it-cost-to-install-solar-panels-in-2025-1"
           target="_blank"
           >Solar Installation Sizes:</a
-        >
-      </label>
+        ></label
+      >
+      <div
+        style="display: flex; gap: 8px; font-weight: bold; margin-bottom: 4px"
+      >
+        <span style="width: 80px">kW</span>
+        <span style="width: 100px">Cost </span>
+        <span style="width: 60px"></span>
+      </div>
       <div
         *ngFor="let size of solarSizes; let i = index"
         style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px"
