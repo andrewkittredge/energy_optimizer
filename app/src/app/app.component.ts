@@ -34,12 +34,12 @@ export class AppComponent implements OnInit {
   title = 'energy-optimizer';
   
   // Form values
-  peakPrice: number = 0.5;
-  offPeakPrice: number = 0.4;
-  batteryCostPerKw: number = 0.15;
-  peakConsumption: number = 10;
-  offPeakConsumption: number = 20;
-  solarInstallationSizes: string = '{"3":0.282,"5":0.25,"6":0.23,"8":0.21,"10":0.19,"12":0.117}';
+  peakPrice!: number;
+  offPeakPrice!: number;
+  batteryCostPerKw!: number;
+  peakConsumption!: number;
+  offPeakConsumption!: number;
+  solarInstallationSizes!: string;
   
   result: OptimizeResponse | null = null;
   resultError: string = '';
