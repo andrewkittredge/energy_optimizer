@@ -31,7 +31,11 @@
       />
     </label>
     <label>
-      <a>Battery cost per kW (USD/kWh)</a>:
+      <a
+        href="https://www.lazard.com/research-insights/levelized-cost-of-energyplus-lcoeplus/"
+        target="_blank"
+        >Battery cost per kW (USD/kWh)</a
+      >:
       <input
         type="number"
         step="0.01"
@@ -41,7 +45,11 @@
       />
     </label>
     <label>
-      <a>Peak consumption (kWh)</a>:
+      <a
+        href="https://www.constellation.com/energy-101/energy-education/average-home-power-usage.html#how-many-kwh-house-use"
+        target="_blank"
+        >Peak consumption (kWh)</a
+      >:
       <input
         type="number"
         step="1"
@@ -51,7 +59,11 @@
       />
     </label>
     <label>
-      <a>Off-peak consumption (kWh)</a>:
+      <a
+        href="https://www.constellation.com/energy-101/energy-education/average-home-power-usage.html#how-many-kwh-house-use"
+        target="_blank"
+        >Off-peak consumption (kWh)</a
+      >:
       <input
         type="number"
         step="1"
@@ -62,7 +74,13 @@
     </label>
 
     <div>
-      <label>Solar Installation Sizes:</label>
+      <label>
+        <a
+          href="https://www.integratesun.com/post/how-much-does-it-cost-to-install-solar-panels-in-2025-1"
+          target="_blank"
+          >Solar Installation Sizes:</a
+        >
+      </label>
       <div
         *ngFor="let size of solarSizes; let i = index"
         style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px"
