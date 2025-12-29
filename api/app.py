@@ -22,6 +22,12 @@ app.add_middleware(
 )
 
 
+@app.get("/defaults")
+def get_defaults() -> OptimizeParams:
+    """Return the default optimization parameters."""
+    return OptimizeParams()
+
+
 @app.post("/optimize")
 def optimize(body: OptimizeParams | None = None) -> OptimizeResponse:
     """Accept JSON body with optional params and run the optimizer.

@@ -14,6 +14,15 @@ interface OptimizeResponse {
   peak_grid_consumption: number;
 }
 
+interface OptimizeParams {
+  peak_price: number;
+  off_peak_price: number;
+  battery_cost_per_kw: number;
+  peak_consumption: number;
+  off_peak_consumption: number;
+  solar_installation_sizes: Record<string, number>;
+}
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -39,7 +48,24 @@ export class AppComponent implements OnInit {
   constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
+    this.loadFormDefaults();
     this.loadStateFromUrl();
+  }
+
+  loadFormDefaults(): void {
+    fetch('http://localhost:8000/defaults')
+      .then((resp) => resp.json())
+      .then((defaults: OptimizeParams) => {
+        this.peakPrice = defaults.peak_price;
+        this.offPeakPrice = defaults.off_peak_price;
+        this.batteryCostPerKw = defaults.battery_cost_per_kw;
+        this.peakConsumption = defaults.peak_consumption;
+        this.offPeakConsumption = defaults.off_peak_consumption;
+        this.solarInstallationSizes = JSON.stringify(defaults.solar_installation_sizes);
+      })
+      .catch((err) => {
+        console.warn('Failed to load defaults from API:', err);
+      });
   }
 
   loadStateFromUrl(): void {
