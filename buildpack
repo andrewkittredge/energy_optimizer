@@ -1,0 +1,6 @@
+# Buildpack override for Heroku/Cloud Native Buildpacks
+# This file is optional and only needed if you want to explicitly set the buildpack for the project.
+# For Python backend only:
+python
+# For Angular frontend (if deploying together):
+# nodejs

@@ -1,0 +1,10 @@
+# Buildpacks configuration for energy_optimizer
+# See: https://devcenter.heroku.com/articles/buildpacks
+# This file tells platforms like Heroku which buildpacks to use.
+# Python buildpack for backend, Node.js for Angular frontend (if deploying both)
+
+# Uncomment the buildpacks you need:
+# Python (for FastAPI/Pyomo backend)
+heroku/python
+# Node.js (for Angular frontend, if deploying together)
+heroku/nodejs
