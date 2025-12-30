@@ -56,7 +56,9 @@ def build_model(params: OptimizeParams) -> pyo.ConcreteModel:
     )
 
     model.SOLAR_SIZES = pyo.Set(initialize=SOLAR_INSTALLATION_SIZES.keys())
-    model.solar_size_flags = pyo.Var(model.SOLAR_SIZES, within=pyo.Binary, units=units.USD / units.kWh)
+    model.solar_size_flags = pyo.Var(
+        model.SOLAR_SIZES, within=pyo.Binary, units=units.USD / units.kWh
+    )
     model.solar_capacity = pyo.Var(
         within=pyo.NonNegativeReals, units=units.kWh, bounds=(1, 100)
     )
@@ -120,7 +122,7 @@ def build_model(params: OptimizeParams) -> pyo.ConcreteModel:
     )
 
     # Keep unit assertions to catch mismatches during refactors
-    
+
     assert_units_consistent(model.off_peak_constraint)
     assert_units_consistent(model.solar_cost_constraint)
     assert_units_consistent(model.peak_constraint)
