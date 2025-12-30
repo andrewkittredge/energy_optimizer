@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import Any, Dict
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -29,7 +28,7 @@ def get_defaults() -> OptimizeParams:
 
 
 @app.post("/optimize")
-def optimize(body: OptimizeParams | None = None) -> OptimizeResponse:
+def optimize(params: OptimizeParams | None = None) -> OptimizeResponse:
     """Accept JSON body with optional params and run the optimizer.
 
     Supported keys (same as script `build_model(params=...)`):
@@ -37,20 +36,6 @@ def optimize(body: OptimizeParams | None = None) -> OptimizeResponse:
       - peak_consumption, off_peak_consumption
       - solar_installation_sizes (map of size->cost)
     """
-    params: Dict[str, Any] = {}
-    if body is not None:
-        params = body.dict(exclude_none=True)
-
-    # Convert solar size keys to ints when provided as strings
-    if "solar_installation_sizes" in params:
-        sizes = params["solar_installation_sizes"]
-        try:
-            sizes = {int(k): float(v) for k, v in sizes.items()}
-        except Exception as exc:
-            raise HTTPException(
-                status_code=400, detail="Invalid solar_installation_sizes format"
-            )
-        params["solar_installation_sizes"] = sizes
 
     model = run_optimizer.build_model(params=params)
 

@@ -18,8 +18,10 @@ from pyomo.environ import units
 import pyomo.gdp as gdp
 from pyomo.core import TransformationFactory
 
+from api.optimize_params import OptimizeParams
 
-def build_model(params: dict | None = None) -> pyo.ConcreteModel:
+
+def build_model(params: OptimizeParams) -> pyo.ConcreteModel:
     """Build the optimization model.
 
     Optional `params` dictionary can override the default constants. Supported keys:
@@ -30,34 +32,12 @@ def build_model(params: dict | None = None) -> pyo.ConcreteModel:
       - off_peak_consumption
       - solar_installation_sizes (dict mapping size->cost)
     """
-    # Defaults (from the notebook)
-    defaults = {
-        "peak_price": 0.5,
-        "off_peak_price": 0.4,
-        "battery_cost_per_kw": 0.15,
-        "peak_consumption": 10,
-        "off_peak_consumption": 20,
-        "solar_installation_sizes": {
-            3: 0.282,
-            5: 0.250,
-            6: 0.230,
-            8: 0.210,
-            10: 0.190,
-            12: 0.117,
-        },
-    }
-
-    if params:
-        # shallow merge: override any defaults provided in params
-        defaults.update(params)
-
-    PEAK_PRICE = defaults["peak_price"]
-    OFF_PEAK_PRICE = defaults["off_peak_price"]
-    BATTERY_COST_PER_KW = defaults["battery_cost_per_kw"]
-    PEAK_CONSUMPTION = defaults["peak_consumption"]
-    OFF_PEAK_CONSUMPTION = defaults["off_peak_consumption"]
-
-    SOLAR_INSTALLATION_SIZES = defaults["solar_installation_sizes"]
+    PEAK_PRICE = params.peak_price
+    OFF_PEAK_PRICE = params.off_peak_price
+    BATTERY_COST_PER_KW = params.battery_cost_per_kw
+    PEAK_CONSUMPTION = params.peak_consumption
+    OFF_PEAK_CONSUMPTION = params.off_peak_consumption
+    SOLAR_INSTALLATION_SIZES = params.solar_installation_sizes
 
     model = pyo.ConcreteModel()
 
@@ -76,7 +56,7 @@ def build_model(params: dict | None = None) -> pyo.ConcreteModel:
     )
 
     model.SOLAR_SIZES = pyo.Set(initialize=SOLAR_INSTALLATION_SIZES.keys())
-    model.solar_size_flags = pyo.Var(model.SOLAR_SIZES, within=pyo.Binary)
+    model.solar_size_flags = pyo.Var(model.SOLAR_SIZES, within=pyo.Binary, units=units.USD / units.kWh)
     model.solar_capacity = pyo.Var(
         within=pyo.NonNegativeReals, units=units.kWh, bounds=(1, 100)
     )
@@ -140,13 +120,12 @@ def build_model(params: dict | None = None) -> pyo.ConcreteModel:
     )
 
     # Keep unit assertions to catch mismatches during refactors
-    """
+    
     assert_units_consistent(model.off_peak_constraint)
     assert_units_consistent(model.solar_cost_constraint)
     assert_units_consistent(model.peak_constraint)
     assert_units_consistent(model.either_or_disjunction)
     assert_units_consistent(model.minimize_cost)
-    """
 
     # Apply GDP transformation (same as notebook)
     TransformationFactory("gdp.bigm").apply_to(model)
