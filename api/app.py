@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+import os
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi_mcp import FastApiMCP
@@ -9,7 +11,9 @@ from .optimize_response import OptimizeResponse
 from .optimize_params import OptimizeParams
 import scripts.run_optimizer as run_optimizer
 
+
 app = FastAPI(title="Energy Optimizer API")
+
 
 # Allow local demo UI to talk to this API. Tighten in production.
 app.add_middleware(
@@ -55,6 +59,17 @@ mcp = FastApiMCP(app)
 
 # Mount the MCP server directly to your FastAPI app
 mcp.mount()
+
+# Path to Angular build output
+frontend_dist = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)),
+    "app",
+    "dist",
+    "energy-optimizer",
+    "browser",
+)
+if os.path.exists(frontend_dist):
+    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
 
 if __name__ == "__main__":
     import uvicorn
