@@ -4,9 +4,10 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt-get instal
 
 # Install frontend dependencies and build Angular app for production
 WORKDIR /workspaces/energy_optimizer/app
-RUN ls
-RUN npm install && npm run build --configuration=production
+RUN touch signal.txt
 
+# RUN ls
+# RUN npm install && npm run build --configuration=production
 # Return to backend context
 #WORKDIR /workspaces/energy_optimizer
 # RUN pip install debugpy
