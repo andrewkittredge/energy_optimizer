@@ -9,6 +9,6 @@ RUN touch signal.txt
 # RUN ls
 # RUN npm install && npm run build --configuration=production
 # Return to backend context
-#WORKDIR /workspaces/energy_optimizer
-# RUN pip install debugpy
+WORKDIR /workspaces/energy_optimizer
+
 
