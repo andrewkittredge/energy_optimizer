@@ -6,7 +6,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt-get instal
 WORKDIR /workspaces/energy_optimizer/app
 # RUN ls
 RUN npm install && npm run build --configuration=production
-RUN touch signal.txt
+RUN touch /workspaces/energy_optimizer/app/signal.txt
 
 # Return to backend context
 WORKDIR /workspaces/energy_optimizer
