@@ -1,14 +1,35 @@
+##########
+# Frontend build stage: compile Angular app once during image build
+##########
+FROM node:20-slim AS frontend-build
+WORKDIR /frontend
+
+# Only copy what the Angular build needs (skip node_modules)
+COPY app/package*.json app/angular.json app/tsconfig*.json ./app/
+COPY app/src ./app/src
+COPY app/public ./app/public
+
+RUN cd app && npm ci && npm run build --configuration=production
+
+##########
+# Runtime stage: Python + Gurobi with built static assets
+##########
 FROM gurobi/python:13.0.0_3.13
-RUN apt-get update -y && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt-get install -y nodejs && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/energy_optimizer
 
-# Install frontend dependencies and build Angular app for production
-WORKDIR /workspaces/energy_optimizer/app
-# RUN ls
-#RUN npm install && npm run build --configuration=production
-RUN touch /workspaces/energy_optimizer/app/signal.txt
+# Python dependencies first for better layer caching
+COPY requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Return to backend context
-WORKDIR /workspaces/energy_optimizer
-# RUN pip install debugpy
+# Copy application code
+COPY api ./api
+COPY scripts ./scripts
+COPY public ./public
+COPY README.md ./README.md
+
+# Bring in the built Angular bundle expected by api/app.py
+COPY --from=frontend-build /frontend/app/dist ./app/dist
+
+EXPOSE 5000
+CMD ["uvicorn", "api.app:app", "--host", "0.0.0.0", "--port", "5000"]
 
