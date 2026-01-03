@@ -24,8 +24,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY api ./api
 COPY scripts ./scripts
-COPY public ./public
-COPY README.md ./README.md
+
 
 # Bring in the built Angular bundle expected by api/app.py
 COPY --from=frontend-build /frontend/app/dist ./app/dist
