@@ -28,11 +28,11 @@ interface OptimizeParams {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
   title = 'energy-optimizer';
-  
+
   // Form values
   peakPrice!: number;
   offPeakPrice!: number;
@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
   peakConsumption!: number;
   offPeakConsumption!: number;
   solarSizes: { kw: number; cost: number }[] = [];
-  
+
   result: OptimizeResponse | null = null;
   resultError: string = '';
   isRunning: boolean = false;
@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
   }
 
   loadFormDefaults(): void {
-    fetch('http://localhost:8000/defaults')
+    fetch('/defaults')
       .then((resp) => resp.json())
       .then((defaults: OptimizeParams) => {
         this.peakPrice = defaults.peak_price;
@@ -80,18 +80,25 @@ export class AppComponent implements OnInit {
 
   loadStateFromUrl(): void {
     this.route.queryParams.subscribe((params) => {
-      if (params['peakPrice'] !== undefined) this.peakPrice = Number(params['peakPrice']);
-      if (params['offPeakPrice'] !== undefined) this.offPeakPrice = Number(params['offPeakPrice']);
-      if (params['batteryCostPerKw'] !== undefined) this.batteryCostPerKw = Number(params['batteryCostPerKw']);
-      if (params['peakConsumption'] !== undefined) this.peakConsumption = Number(params['peakConsumption']);
-      if (params['offPeakConsumption'] !== undefined) this.offPeakConsumption = Number(params['offPeakConsumption']);
+      if (params['peakPrice'] !== undefined)
+        this.peakPrice = Number(params['peakPrice']);
+      if (params['offPeakPrice'] !== undefined)
+        this.offPeakPrice = Number(params['offPeakPrice']);
+      if (params['batteryCostPerKw'] !== undefined)
+        this.batteryCostPerKw = Number(params['batteryCostPerKw']);
+      if (params['peakConsumption'] !== undefined)
+        this.peakConsumption = Number(params['peakConsumption']);
+      if (params['offPeakConsumption'] !== undefined)
+        this.offPeakConsumption = Number(params['offPeakConsumption']);
       if (params['solarInstallationSizes'] !== undefined) {
         let raw = params['solarInstallationSizes'];
         try {
           // If it's URL-encoded JSON, decode first
           const decoded = decodeURIComponent(String(raw));
           // If decoded looks like JSON, use it; otherwise try raw
-          const candidate = decoded.trim().startsWith('{') ? decoded : String(raw);
+          const candidate = decoded.trim().startsWith('{')
+            ? decoded
+            : String(raw);
           // Normalize to a pretty JSON string for the textarea
           const parsed = JSON.parse(candidate) as { [key: string]: number };
           this.solarSizes = Object.entries(parsed).map(
@@ -99,10 +106,12 @@ export class AppComponent implements OnInit {
           );
         } catch (e) {
           // fallback: set raw string (e.g., already a compact JSON or simple string)
-          this.solarSizes = String(raw).split(',').map(size => {
-            const [kw, cost] = size.split(':').map(Number);
-            return { kw, cost };
-          });
+          this.solarSizes = String(raw)
+            .split(',')
+            .map((size) => {
+              const [kw, cost] = size.split(':').map(Number);
+              return { kw, cost };
+            });
         }
       }
     });
@@ -117,7 +126,11 @@ export class AppComponent implements OnInit {
         batteryCostPerKw: this.batteryCostPerKw,
         peakConsumption: this.peakConsumption,
         offPeakConsumption: this.offPeakConsumption,
-        solarInstallationSizes: JSON.stringify(Object.fromEntries(this.solarSizes.map(item => [item.kw, item.cost]))),
+        solarInstallationSizes: JSON.stringify(
+          Object.fromEntries(
+            this.solarSizes.map((item) => [item.kw, item.cost])
+          )
+        ),
       },
       queryParamsHandling: 'merge',
     });
@@ -130,7 +143,9 @@ export class AppComponent implements OnInit {
       battery_cost_per_kw: this.batteryCostPerKw,
       peak_consumption: this.peakConsumption,
       off_peak_consumption: this.offPeakConsumption,
-      solar_installation_sizes: Object.fromEntries(this.solarSizes.map(item => [item.kw, item.cost]))
+      solar_installation_sizes: Object.fromEntries(
+        this.solarSizes.map((item) => [item.kw, item.cost])
+      ),
     };
 
     this.result = null;
@@ -138,7 +153,7 @@ export class AppComponent implements OnInit {
     this.isRunning = true;
 
     try {
-      const resp = await fetch('http://localhost:8000/optimize', {
+      const resp = await fetch('/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -147,7 +162,8 @@ export class AppComponent implements OnInit {
       this.result = j;
       this.updateUrlState();
     } catch (err) {
-      this.resultError = 'Request failed: ' + (err instanceof Error ? err.message : String(err));
+      this.resultError =
+        'Request failed: ' + (err instanceof Error ? err.message : String(err));
     } finally {
       this.isRunning = false;
     }
