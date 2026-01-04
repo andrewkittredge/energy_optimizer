@@ -1,10 +1,9 @@
 # build stage
 FROM node:lts-alpine AS build-stage
 WORKDIR /app
-COPY app/package*.json ./
-#RUN npm install
-# COPY . .
-# RUN npm run build
+COPY app .
+RUN npm install
+RUN npm run build
 
 
 FROM gurobi/python:13.0.0_3.13 AS production-stage
