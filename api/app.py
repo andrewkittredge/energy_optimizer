@@ -9,7 +9,7 @@ from fastapi_mcp import FastApiMCP
 
 from .optimize_response import OptimizeResponse
 from .optimize_params import OptimizeParams
-import scripts.run_optimizer as run_optimizer
+import api.run_optimizer as run_optimizer
 
 
 app = FastAPI(title="Energy Optimizer API")
