@@ -7,7 +7,7 @@ RUN npm run build
 
 
 FROM gurobi/python:13.0.0_3.13 AS production-stage
-WORKDIR
+WORKDIR /api
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY api ./api
