@@ -14,11 +14,11 @@ from fastmcp import FastMCP
 from starlette.middleware.cors import CORSMiddleware
 import uvicorn
 
-app = FastAPI(title="Energy Optimizer API")
+fast_api_app = FastAPI(title="Energy Optimizer API")
 
 
 # Allow local demo UI to talk to this API. Tighten in production.
-app.add_middleware(
+fast_api_app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
@@ -27,13 +27,13 @@ app.add_middleware(
 )
 
 
-@app.get("/defaults")
+@fast_api_app.get("/defaults")
 def get_defaults() -> OptimizeParams:
     """Return the default optimization parameters."""
     return OptimizeParams()
 
 
-@app.post("/optimize")
+@fast_api_app.post("/optimize")
 def optimize(params: OptimizeParams | None = None) -> OptimizeResponse:
     """Accept JSON body with optional params and run the optimizer.
 
@@ -66,10 +66,12 @@ frontend_dist = os.path.join(
     "browser",
 )
 if os.path.exists(frontend_dist):
-    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
+    fast_api_app.mount(
+        "/static", StaticFiles(directory=frontend_dist, html=True), name="frontend"
+    )
 
 
-mcp = FastMCP.from_fastapi(app=app, stateless_http=True)
+mcp = FastMCP.from_fastapi(app=fast_api_app, stateless_http=True)
 
 
 @mcp.tool()
@@ -86,7 +88,6 @@ starlette_app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 if __name__ == "__main__":
 
