@@ -16,7 +16,10 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Uncomment the next line to run commands after the container is created.
-	"postCreateCommand": "/usr/local/bin/pip install -r requirements.txt",
+	"postCreateCommand": {
+		"python_requirements": "/usr/local/bin/pip install -r api/requirements.txt",
+		"npm_install": "cd app && npm install"
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
