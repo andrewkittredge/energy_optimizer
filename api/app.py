@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException
-from fastapi.staticfiles import StaticFiles
+from starlette.staticfiles import StaticFiles
 import os
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -77,18 +77,18 @@ def greet(name: str) -> str:
     return f"Hello, {name}!"
 
 
-if __name__ == "__main__":
-    starlette_app = mcp.http_app()
+starlette_app = mcp.http_app()
 
-    starlette_app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[
-            "*"
-        ],  # Allow all origins for development; restrict in production
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+starlette_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for development; restrict in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+if __name__ == "__main__":
 
     # Run the server
     uvicorn.run(starlette_app, host="127.0.0.1", port=8000)
