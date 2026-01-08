@@ -71,15 +71,15 @@ if os.path.exists(frontend_dist):
     )
 
 
-mcp = FastMCP.from_fastapi(app=fast_api_app, stateless_http=True)
+fast_mcp_server = FastMCP.from_fastapi(app=fast_api_app, stateless_http=True)
 
 
-@mcp.tool()
+@fast_mcp_server.tool()
 def greet(name: str) -> str:
     return f"Hello, {name}!"
 
 
-starlette_app = mcp.http_app()
+starlette_app = fast_mcp_server.http_app()
 
 starlette_app.add_middleware(
     CORSMiddleware,
@@ -92,4 +92,4 @@ starlette_app.add_middleware(
 if __name__ == "__main__":
 
     # Run the server
-    uvicorn.run(fast_api_app, host="127.0.0.1", port=8000)
+    uvicorn.run(starlette_app, host="127.0.0.1", port=8000)
