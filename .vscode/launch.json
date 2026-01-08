@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "api.app:app",
+                "api.app:starlette_app",
                 "--reload"
             ],
             "jinja": true
