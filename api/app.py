@@ -5,12 +5,14 @@ from fastapi.staticfiles import StaticFiles
 import os
 from fastapi.middleware.cors import CORSMiddleware
 
-from fastapi_mcp import FastApiMCP
 
 from .optimize_response import OptimizeResponse
 from .optimize_params import OptimizeParams
 import api.run_optimizer as run_optimizer
 
+from fastmcp import FastMCP
+from starlette.middleware.cors import CORSMiddleware
+import uvicorn
 
 app = FastAPI(title="Energy Optimizer API")
 
@@ -55,11 +57,6 @@ def optimize(params: OptimizeParams | None = None) -> OptimizeResponse:
     )
 
 
-mcp = FastApiMCP(app)
-
-# Mount the MCP server directly to your FastAPI app
-mcp.mount()
-
 # Path to Angular build output
 frontend_dist = os.path.join(
     os.path.dirname(os.path.dirname(__file__)),
@@ -71,7 +68,27 @@ frontend_dist = os.path.join(
 if os.path.exists(frontend_dist):
     app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
 
-if __name__ == "__main__":
-    import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+mcp = FastMCP.from_fastapi(app=app, stateless_http=True)
+
+
+@mcp.tool()
+def greet(name: str) -> str:
+    return f"Hello, {name}!"
+
+
+if __name__ == "__main__":
+    starlette_app = mcp.http_app()
+
+    starlette_app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "*"
+        ],  # Allow all origins for development; restrict in production
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # Run the server
+    uvicorn.run(starlette_app, host="127.0.0.1", port=8000)
