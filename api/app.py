@@ -67,7 +67,7 @@ frontend_dist = os.path.join(
 )
 if os.path.exists(frontend_dist):
     fast_api_app.mount(
-        "/static", StaticFiles(directory=frontend_dist, html=True), name="frontend"
+        "/", StaticFiles(directory=frontend_dist, html=True), name="frontend"
     )
 
 
@@ -92,4 +92,4 @@ starlette_app.add_middleware(
 if __name__ == "__main__":
 
     # Run the server
-    uvicorn.run(starlette_app, host="127.0.0.1", port=8000)
+    uvicorn.run(fast_api_app, host="127.0.0.1", port=8000)
