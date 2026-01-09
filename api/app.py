@@ -31,6 +31,7 @@ fast_api_app = FastAPI(title="Energy Optimizer API", lifespan=fast_mcp_app.lifes
 fast_api_app.mount("/solar", fast_mcp_app)
 
 
+@fast_mcp.tool
 @fast_api_app.get("/defaults")
 def get_defaults() -> OptimizeParams:
     """Return the default optimization parameters."""
