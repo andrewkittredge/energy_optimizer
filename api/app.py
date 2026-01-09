@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException
-from starlette.staticfiles import StaticFiles
+
 import os
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 
 from .optimize_response import OptimizeResponse
@@ -71,6 +72,10 @@ frontend_dist = os.path.join(
 if os.path.exists(frontend_dist):
     fast_api_app.mount(
         "/", StaticFiles(directory=frontend_dist, html=True), name="frontend"
+    )
+else:
+    raise RuntimeError(
+        f"Frontend build not found at {frontend_dist}. Please build the Angular app first."
     )
 
 # Allow local demo UI to talk to this API. Tighten in production.
