@@ -14,17 +14,20 @@ from fastmcp import FastMCP
 from starlette.middleware.cors import CORSMiddleware
 import uvicorn
 
-fast_api_app = FastAPI(title="Energy Optimizer API")
+fast_mcp = FastMCP("Analytics Tools", stateless_http=True)
 
 
-# Allow local demo UI to talk to this API. Tighten in production.
-fast_api_app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@fast_mcp.tool
+def greet(name: str) -> str:
+    return f"Hello, {name}!"
+
+
+fast_mcp_app = fast_mcp.http_app(path="/mcp")
+
+fast_api_app = FastAPI(title="Energy Optimizer API", lifespan=fast_mcp_app.lifespan)
+
+
+fast_api_app.mount("/solar", fast_mcp_app)
 
 
 @fast_api_app.get("/defaults")
@@ -70,16 +73,17 @@ if os.path.exists(frontend_dist):
         "/", StaticFiles(directory=frontend_dist, html=True), name="frontend"
     )
 
+# Allow local demo UI to talk to this API. Tighten in production.
+fast_api_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-fast_mcp_server = FastMCP.from_fastapi(app=fast_api_app, stateless_http=True)
-
-
-@fast_mcp_server.tool()
-def greet(name: str) -> str:
-    return f"Hello, {name}!"
-
-
-starlette_app = fast_mcp_server.http_app()
+"""
+#starlette_app = fast_mcp_server.http_app()
 
 starlette_app.add_middleware(
     CORSMiddleware,
@@ -88,8 +92,9 @@ starlette_app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+"""
 
 if __name__ == "__main__":
 
     # Run the server
-    uvicorn.run(starlette_app, host="127.0.0.1", port=8000)
+    uvicorn.run(fast_api_app, host="127.0.0.1", port=8000)
