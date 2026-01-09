@@ -82,18 +82,6 @@ fast_api_app.add_middleware(
     allow_headers=["*"],
 )
 
-"""
-#starlette_app = fast_mcp_server.http_app()
-
-starlette_app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development; restrict in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-"""
-
 if __name__ == "__main__":
 
     # Run the server
