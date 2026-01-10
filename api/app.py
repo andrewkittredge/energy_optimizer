@@ -15,12 +15,31 @@ from fastmcp import FastMCP
 from starlette.middleware.cors import CORSMiddleware
 import uvicorn
 
-fast_mcp = FastMCP("Analytics Tools", stateless_http=True)
+fast_mcp = FastMCP(
+    name="Energy Optimizer MCP Server",
+    stateless_http=True,
+    instructions="""
+This server helps you decide if you should get solar panels and a battery for your home.
+Start calling set_address to set your address.
+                   """,
+    version="0.0.1",
+)
 
 
-@fast_mcp.tool
-def greet(name: str) -> str:
-    return f"Hello, {name}!"
+@fast_mcp.prompt(
+    name="solar prices prompt",
+    description="Ask the user about their solar panels price quotes",
+)
+def ask_solar_prices() -> str:
+    return (
+        "What price quotes have you received for solar panel installations? "
+        "Please provide the size and cost for each quote."
+    )
+
+
+@fast_mcp.tool(name="set_address", description="Set the user's address")
+def set_address(address: str) -> str:
+    return f"Address set to: {address}"
 
 
 fast_mcp_app = fast_mcp.http_app(path="/mcp")
@@ -31,13 +50,18 @@ fast_api_app = FastAPI(title="Energy Optimizer API", lifespan=fast_mcp_app.lifes
 fast_api_app.mount("/solar", fast_mcp_app)
 
 
-@fast_mcp.tool
+@fast_mcp.resource(
+    uri="data://defaults",
+    description="Default solar optimization parameters",
+    name="energy optimizer defaults",
+)
 @fast_api_app.get("/defaults")
 def get_defaults() -> OptimizeParams:
     """Return the default optimization parameters."""
     return OptimizeParams()
 
 
+@fast_mcp.tool
 @fast_api_app.post("/optimize")
 def optimize(params: OptimizeParams | None = None) -> OptimizeResponse:
     """Accept JSON body with optional params and run the optimizer.
