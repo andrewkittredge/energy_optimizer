@@ -6,8 +6,6 @@ import os
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import requests
-import pandas as pd
 
 
 from .optimize_response import OptimizeResponse
@@ -17,6 +15,8 @@ import api.run_optimizer as run_optimizer
 from fastmcp import FastMCP
 from starlette.middleware.cors import CORSMiddleware
 import uvicorn
+
+api_key = "gHbCeaUfzmisr2y0j3a9nSOMljA4ivVKg7zeh3nW"
 
 fast_mcp = FastMCP(
     name="Energy Optimizer MCP Server",
@@ -87,36 +87,6 @@ def optimize(params: OptimizeParams | None = None) -> OptimizeResponse:
         off_peak_grid_usage=float(model.off_peak_grid_usage.value),
         peak_grid_consumption=float(model.peak_grid_consumption.value),
     )
-
-
-# Utility function to fetch electricity price from OpenEI Utility Rates API
-def get_electricity_price_from_openei(api_key: str, address: str) -> float | None:
-    """
-    Fetches the electricity price (cents/kWh) from OpenEI Utility Rates API for a given location.
-    Args:
-        api_key (str): Your OpenEI API key.
-        address (str): The address of the location.
-    Returns:
-        float: The average electricity price in cents/kWh, or None if not found.
-    """
-    url = "https://api.openei.org/utility_rates"
-    params = {
-        "version": "latest",
-        "format": "json",
-        "api_key": api_key,
-        "address": "419 putnam ave, Cambridge, MA 02139",
-        "detail": "full",
-    }
-    response = requests.get(url, params=params, timeout=10)
-    data = response.json()["items"]
-    df = pd.DataFrame(data)
-    df["startdate"] = pd.to_datetime(df["startdate"], unit="s")
-    df = df.sort_values("startdate", ascending=False)
-    df = df[df["sector"] == "Residential"]
-    df = df[df["servicetype"] == "Delivery with Standard Offer"]
-    df = df[df["startdate"] == df["startdate"].max()]
-    rate = df["energyratestructure"].iloc[0][0][0]
-    return rate["rate"] + rate["adj"]
 
 
 # Path to Angular build output
