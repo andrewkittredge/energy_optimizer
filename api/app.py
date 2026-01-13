@@ -7,41 +7,7 @@ import os
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import requests
-
-
-# Utility function to fetch electricity price from OpenEI Utility Rates API
-def get_electricity_price_from_openei(api_key: str, lat: float, lon: float):
-    """
-    Fetches the electricity price (cents/kWh) from OpenEI Utility Rates API for a given location.
-    Args:
-        api_key (str): Your OpenEI API key.
-        lat (float): Latitude of the location.
-        lon (float): Longitude of the location.
-    Returns:
-        float: The average electricity price in cents/kWh, or None if not found.
-    """
-    url = "https://api.openei.org/utility_rates"
-    params = {
-        "version": "latest",
-        "format": "json",
-        "api_key": api_key,
-        "lat": lat,
-        "lon": lon,
-    }
-    try:
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-        # The API returns a 'utility_rates' list; get the first rate's 'rate' field if available
-        rates = data.get("utility_rates", [])
-        if rates and "rate" in rates[0]:
-            return rates[0]["rate"]
-        # Some responses may have 'residential' or 'commercial' keys
-        if rates and "residential" in rates[0]:
-            return rates[0]["residential"]
-    except Exception as e:
-        print(f"Error fetching OpenEI rates: {e}")
-    return None
+import pandas as pd
 
 
 from .optimize_response import OptimizeResponse
@@ -121,6 +87,36 @@ def optimize(params: OptimizeParams | None = None) -> OptimizeResponse:
         off_peak_grid_usage=float(model.off_peak_grid_usage.value),
         peak_grid_consumption=float(model.peak_grid_consumption.value),
     )
+
+
+# Utility function to fetch electricity price from OpenEI Utility Rates API
+def get_electricity_price_from_openei(api_key: str, address: str) -> float | None:
+    """
+    Fetches the electricity price (cents/kWh) from OpenEI Utility Rates API for a given location.
+    Args:
+        api_key (str): Your OpenEI API key.
+        address (str): The address of the location.
+    Returns:
+        float: The average electricity price in cents/kWh, or None if not found.
+    """
+    url = "https://api.openei.org/utility_rates"
+    params = {
+        "version": "latest",
+        "format": "json",
+        "api_key": api_key,
+        "address": "419 putnam ave, Cambridge, MA 02139",
+        "detail": "full",
+    }
+    response = requests.get(url, params=params, timeout=10)
+    data = response.json()["items"]
+    df = pd.DataFrame(data)
+    df["startdate"] = pd.to_datetime(df["startdate"], unit="s")
+    df = df.sort_values("startdate", ascending=False)
+    df = df[df["sector"] == "Residential"]
+    df = df[df["servicetype"] == "Delivery with Standard Offer"]
+    df = df[df["startdate"] == df["startdate"].max()]
+    rate = df["energyratestructure"].iloc[0][0][0]
+    return rate["rate"] + rate["adj"]
 
 
 # Path to Angular build output
