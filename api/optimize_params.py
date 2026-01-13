@@ -17,4 +17,3 @@ class OptimizeParams(BaseModel):
         10: 0.190,
         12: 0.117,
     }
-
