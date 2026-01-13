@@ -34,6 +34,7 @@ export class AppComponent implements OnInit {
   title = 'energy-optimizer';
 
   // Form values
+  address: string = '';
   peakPrice!: number;
   offPeakPrice!: number;
   batteryCostPerKw!: number;

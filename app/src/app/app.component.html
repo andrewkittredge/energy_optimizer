@@ -2,6 +2,16 @@
   <h1>Energy Optimizer v1</h1>
   <form (ngSubmit)="onSubmit()">
     <label>
+      Address:
+      <input
+        type="text"
+        [(ngModel)]="address"
+        (ngModelChange)="updateUrlState()"
+        name="address"
+        placeholder="123 Main St, City, State"
+      />
+    </label>
+    <label>
       <a
         href="https://www.pge.com/assets/pge/docs/account/rate-plans/residential-electric-rate-plan-pricing.pdf"
         target="_blank"
