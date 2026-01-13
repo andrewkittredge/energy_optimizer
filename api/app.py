@@ -16,7 +16,6 @@ from fastmcp import FastMCP
 from starlette.middleware.cors import CORSMiddleware
 import uvicorn
 
-api_key = "gHbCeaUfzmisr2y0j3a9nSOMljA4ivVKg7zeh3nW"
 
 fast_mcp = FastMCP(
     name="Energy Optimizer MCP Server",
