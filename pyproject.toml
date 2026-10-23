@@ -6,6 +6,7 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi",
     "fastmcp<3",
+    "gurobipy>=13.0.3",
     "pandas",
     "pint",
     "pyomo",

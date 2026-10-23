@@ -9,6 +9,8 @@ The script preserves unit checks and the GDP disjunction transformation from the
 If the requested solver is not available, the script will try to fall back to `cbc`.
 """
 
+# pyright: reportOperatorIssue=false, reportAttributeAccessIssue=false, reportOptionalMemberAccess=false
+
 from __future__ import annotations
 
 import argparse
@@ -161,7 +163,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    model = build_model()
+    model = build_model(OptimizeParams())
 
     try:
         solve_model(model, solver_name=args.solver)

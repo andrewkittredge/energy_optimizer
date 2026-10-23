@@ -12,7 +12,7 @@ Quick start (using the included Dockerfile with Gurobi):
 
 ```powershell
 docker build -t energy_optimizer .
-docker run --rm -it -p 8888:8888 energy_optimizer jupyter notebook --ip=0.0.0.0 --no-browser --allow-root
+docker run --rm -it -p 8000:8000 energy_optimizer
 ```
 
 Run the script inside the container or locally (if you have Pyomo & a solver installed):

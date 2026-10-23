@@ -8,11 +8,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastmcp import FastMCP
 
-import api.run_optimizer as run_optimizer
+from api import run_optimizer
 
 from .optimize_params import OptimizeParams
 from .optimize_response import OptimizeResponse
-
 
 fast_mcp = FastMCP(
     name="Energy Optimizer MCP Server",
@@ -62,7 +61,7 @@ def get_defaults() -> OptimizeParams:
 
 @fast_mcp.tool
 @fast_api_app.post("/optimize")
-def optimize(params: OptimizeParams | None = None) -> OptimizeResponse:
+def optimize(params: OptimizeParams) -> OptimizeResponse:
     """Accept JSON body with optional params and run the optimizer.
 
     Supported keys (same as script `build_model(params=...)`):
