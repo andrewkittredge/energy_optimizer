@@ -1,6 +1,7 @@
-import requests
-import pandas as pd
 from secrets import open_ei_api_key
+
+import pandas as pd
+import requests
 
 
 def get_electricity_price_from_openei(address: str) -> float | None:

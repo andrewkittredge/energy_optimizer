@@ -17,7 +17,7 @@
 	// "forwardPorts": [],
 	// Uncomment the next line to run commands after the container is created.
 	"postCreateCommand": {
-		"python_requirements": "/usr/local/bin/pip install -r api/requirements.txt",
+		"python_requirements": "uv sync",
 		"npm_install": "cd app && npm install"
 	},
 	"customizations": {

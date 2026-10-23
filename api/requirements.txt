@@ -1,6 +1,0 @@
-pyomo
-pint
-fastapi
-uvicorn[standard]
-fastmcp
-pandas

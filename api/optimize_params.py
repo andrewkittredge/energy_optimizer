@@ -1,4 +1,3 @@
-from typing import Dict, Optional
 from pydantic import BaseModel
 
 
@@ -9,7 +8,7 @@ class OptimizeParams(BaseModel):
     peak_consumption: float = 10
     off_peak_consumption: float = 20
     # Accept JSON string keys (typical when sent from JS). We'll coerce to int below.
-    solar_installation_sizes: Dict[float, float] = {
+    solar_installation_sizes: dict[float, float] = {
         3: 0.282,
         5: 0.250,
         6: 0.230,

@@ -1,20 +1,17 @@
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException
-
 import os
 
+import uvicorn
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastmcp import FastMCP
 
-
-from .optimize_response import OptimizeResponse
-from .optimize_params import OptimizeParams
 import api.run_optimizer as run_optimizer
 
-from fastmcp import FastMCP
-from starlette.middleware.cors import CORSMiddleware
-import uvicorn
+from .optimize_params import OptimizeParams
+from .optimize_response import OptimizeResponse
 
 api_key = "gHbCeaUfzmisr2y0j3a9nSOMljA4ivVKg7zeh3nW"
 
@@ -116,6 +113,5 @@ fast_api_app.add_middleware(
 )
 
 if __name__ == "__main__":
-
     # Run the server
     uvicorn.run(fast_api_app, host="127.0.0.1", port=8000)

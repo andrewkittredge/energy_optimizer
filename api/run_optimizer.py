@@ -8,15 +8,17 @@ Usage examples:
 The script preserves unit checks and the GDP disjunction transformation from the notebook.
 If the requested solver is not available, the script will try to fall back to `cbc`.
 """
+
 from __future__ import annotations
 
 import argparse
 import sys
+
 import pyomo.environ as pyo
-from pyomo.util.check_units import assert_units_consistent
-from pyomo.environ import units
-import pyomo.gdp as gdp
+from pyomo import gdp
 from pyomo.core import TransformationFactory
+from pyomo.environ import units
+from pyomo.util.check_units import assert_units_consistent
 
 from api.optimize_params import OptimizeParams
 
@@ -163,9 +165,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         solve_model(model, solver_name=args.solver)
-    except (
-        Exception
-    ) as exc:  # noqa: BLE001 - allow general error capture for user clarity
+    except Exception as exc:  # noqa: BLE001 - allow general error capture for user clarity
         print("Solver run failed:", exc)
         return 2
 

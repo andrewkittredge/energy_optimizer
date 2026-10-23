@@ -9,6 +9,7 @@
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
+            "python": "${workspaceFolder}/.venv/Scripts/python.exe",
             "args": [
                 "api.app:fast_api_app",
                 "--reload"

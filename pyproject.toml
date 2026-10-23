@@ -1,0 +1,17 @@
+[project]
+name = "energy-optimizer"
+version = "0.1.0"
+description = "Pyomo-based household energy cost optimizer with a FastAPI front end"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi",
+    "fastmcp<3",
+    "pandas",
+    "pint",
+    "pyomo",
+    "requests",
+    "uvicorn[standard]",
+]
+
+[tool.uv]
+package = false

@@ -39,8 +39,8 @@ Frontend + API (lightweight demo)
 Run the API locally (ensure Python deps installed):
 
 ```powershell
-pip install -r requirements.txt
-python -m api.app
+uv sync
+uv run python -m api.app
 ```
 
 Serve the static frontend (from repo root) and use the UI to POST to the API:
